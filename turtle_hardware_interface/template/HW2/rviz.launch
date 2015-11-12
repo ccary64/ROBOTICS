@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+    <!-- Convert joint states to TF transforms: not working on ARM -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Run rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d /home/ubuntu/.rviz/turtle.rviz"/>
+</launch>

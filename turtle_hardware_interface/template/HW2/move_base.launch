@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <!-- Run the map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find turtle_hardware_interface)/config/empty_map.yaml"/>
+
+    <!-- Run move_base -->
+    <node name="move_base" pkg="move_base" type="move_base" >
+        <!-- *** put appropriate remap statements here *** -->
+      <rosparam file="$(find turtle_hardware_interface)/config/move_base_params.yaml" command="load" />
+      <rosparam file="$(find turtle_hardware_interface)/config/costmap_common_params.yaml" command="load" ns="global_costmap"/>
+      <rosparam file="$(find turtle_hardware_interface)/config/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+      <rosparam file="$(find turtle_hardware_interface)/config/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find turtle_hardware_interface)/config/global_costmap_params.yaml" command="load" />
+      <rosparam file="$(find turtle_hardware_interface)/config/base_local_planner_params.yaml" command="load" />
+    </node>
+</launch>

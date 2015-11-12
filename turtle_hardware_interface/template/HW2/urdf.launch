@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+    <!-- Set urdf model -->
+    <param name="robot_description" textfile="$(find turtle_hardware_interface)/urdf/turtle.urdf" />
+
+    <!-- Publish joint states -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+
+    <!-- Publish fixed odom->map tf -->
+    <!-- *** fill in what needs to go here *** -->
+</launch>

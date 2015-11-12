@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- Start raspicam node -->
+  <node name="raspicam" pkg="raspicam" type="raspicam_node"
+    respawn="false" output="screen">
+    <param name="framerate" value="1" />
+    <param name="framerateden" value="2" />
+    <remap from="set_camera_info" to="camera/set_camera_info"/>
+  </node>
+
+  <!-- Start node which will call start_camera service -->
+  <node name="start_camera" pkg="turtle_vision" type="start_camera"
+    respawn="false" output="screen"/>
+
+  <!-- Start republish node to decompress JPEG image -->
+  <node name="republish" pkg="image_transport" type="republish"
+    respawn="false" output="screen" args="compressed in:=camera/image raw out:=camera/image_raw">
+  </node>
+</launch>

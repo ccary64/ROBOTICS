@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <include file="$(find turtle_hardware_interface)/launch/diff_drive_controller.launch" />
+    <include file="$(find turtle_hardware_interface)/launch/fixed_map_odom.launch" />
+    <include file="$(find turtle_hardware_interface)/launch/rviz.launch" />
+    <include file="$(find turtle_hardware_interface)/launch/teleop_twist_keyboard.launch" />
+  
+</launch>
+

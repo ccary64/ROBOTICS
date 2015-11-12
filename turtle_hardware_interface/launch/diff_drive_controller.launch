@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+    <!-- Set urdf model -->
+    <param name="robot_description"
+     textfile="$(find turtle_hardware_interface)/urdf/turtle.urdf" />
+ 
+    <!-- Load hardware interface -->
+    <node name="turtle_hardware_interface" pkg="turtle_hardware_interface" type="turtle_hardware_interface"
+      respawn="false" output="screen" />
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find turtle_hardware_interface)/config/hardware_controllers.yaml" command="load"/>
+
+    <!-- Load the default controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+      output="screen" args="mobile_base_controller" />
+    
+    <!-- Publish joint states -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
+      respawn="false" output="screen"/>
+
+    <!-- Start teleop keyboard -->
+    <!--
+    <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" respawn="false"
+      output="log" args="cmd_vel:=/mobile_base_controller/cmd_vel" />
+    -->
+
+    <!-- Publish fixed odom->map tf -->
+<!--
+    <node pkg="tf" type="static_transform_publisher" name="fixed_map" args="0 0 0 0 0 0 /map /odom 25" />
+-->
+
+    <!-- Run pose ekf -->
+    <!--
+    <rosparam file="$(find turtle_hardware_interface)/config/robot_pose_ekf.yaml" command="load"/>
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <remap from="/odom" to="/mobile_base_controller/odom"/>
+    </node>
+    -->
+</launch>

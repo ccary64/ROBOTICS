@@ -1,0 +1,4 @@
+base_global_planner: "global_planner/GlobalPlanner"
+base_local_planner: "base_local_planner/TrajectoryPlannerROS"
+controller_frequency: 5.0
+

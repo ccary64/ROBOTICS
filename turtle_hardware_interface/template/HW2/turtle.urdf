@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<robot name="turtle">
+
+    <!-- *** edit everything that has question marks *** -->
+
+    <link name="base_link">
+        <visual>
+            <geometry>
+		<!-- ??? -->
+            </geometry>
+            <origin xyz=“? ? ?“/>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+		<!-- edit these values -->
+            </geometry>
+            <origin xyz=“ ? ?“/>
+        </collision>
+    </link>
+
+    <link name="left_wheel">
+        <visual>
+            <geometry>
+		<!-- ??? -->
+            </geometry>
+            <origin rpy=“? ? ?“ />
+            <material name="yellow">
+                <color rgba="1 1 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+		<!-- ??? -->
+            </geometry>
+            <origin rpy=“? ? ?“ />
+        </collision>
+    </link>
+
+    <joint name="left_motor" type="continuous">
+        <parent link="base_link"/>
+        <child link="left_wheel"/>
+        <axis xyz=“? ? ?“/>
+        <origin xyz=“? ? ?“/>
+    </joint>
+
+    <link name="right_wheel">
+        <visual>
+            <geometry>
+		<!-- ??? -->
+            </geometry>
+            <origin rpy=“? ? ?“ />
+            <material name="yellow">
+                <color rgba="1 1 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+		<!-- ??? -->
+            </geometry>
+            <origin rpy=“? ? ?“ />
+        </collision>
+    </link>
+
+    <joint name="right_motor" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+        <axis xyz=“? ? ?“/>
+        <origin xyz=“? ? ?“/>
+    </joint>
+
+</robot>

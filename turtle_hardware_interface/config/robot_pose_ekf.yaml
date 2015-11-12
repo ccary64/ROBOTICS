@@ -1,0 +1,6 @@
+robot_pose_ekf:
+  odom_used: true
+  imu_used: false
+  vo_used: false
+
+

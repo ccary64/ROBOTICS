@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <include file="$(find turtle_hardware_interface)/launch/move_base.launch" />
+  <include file="$(find turtle_vision)/launch/raspicam.launch" />
+
+<!--
+    <param name="robot_description"
+     textfile="$(find turtle_hardware_interface)/urdf/turtle.urdf" />
+-->
+
+  <rosparam file="$(find turtle_vision)/config/marker_localization.yaml" command="load"/>
+
+<!--
+  <node name="odommap" pkg="tf" type="static_transform_publisher" respawn="false" output="screen" args="0 0 0 0 0 0 odom base_link 25"/>
+-->
+  
+  <!-- Start marker localization node -->
+  <node name="markerloc" pkg="turtle_vision" type="marker_localization"
+    respawn="false" output="screen"/>
+
+  <include file="$(find turtle_vision)/launch/alvar.launch" />
+<!--
+  <include file="$(find turtle_hardware_interface)/launch/rviz.launch" />
+-->
+</launch>

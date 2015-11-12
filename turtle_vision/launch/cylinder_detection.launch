@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+<!--
+  <node name="image_publisher" pkg="turtle_vision" type="image_publisher"
+    respawn="false" output="screen" args="/home/ubuntu/test1/frame00010.png"/>
+-->
+  <include file="$(find turtle_vision)/launch/raspicam.launch" />
+
+  <node name="cylinder_detection" pkg="turtle_vision" type="cylinder_detection"
+    respawn="false" output="screen"/>
+
+</launch>

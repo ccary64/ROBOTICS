@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+    <!-- Load hardware interface -->
+    <node name=“turtle_hardware_interface”
+     pkg=“turtle_hardware_interface"
+     type=“turtle_hardware_interface"
+		  />
+
+    <!-- Load joint controller configurations from YAML file -->
+    <rosparam
+     file="$(find turtle_hardware_interface)/config/hardware_controllers.yaml”
+     command=“load"
+    />
+
+    <!-- Load controller spawner -->
+    <node name=“controller_spawner"
+     pkg=“controller_manager"
+     type=“spawner"
+     args=“mobile_base_controller"
+    />
+</launch>

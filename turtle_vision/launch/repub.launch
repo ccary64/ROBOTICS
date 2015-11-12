@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- Start republish node to decompress JPEG image -->
+  <node name="republish" pkg="image_transport" type="republish"
+    respawn="false" output="screen" args="compressed in:=camera/image out:=camera/image_repub">
+  </node>
+
+</launch>

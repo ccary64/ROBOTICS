@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <node name="fixed_map_odom" pkg="tf" type="static_transform_publisher" 
+    respawn="false" output="screen" args="0 0 0 0 0 0 map odom 25"/>
+</launch>
+

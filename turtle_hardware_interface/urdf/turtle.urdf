@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<robot name="turtle">
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="0.07" radius=".085"/>
+            </geometry>
+            <origin xyz="0 0 0.035"/>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.07" radius=".085"/>
+            </geometry>
+            <origin xyz="0 0 0.035"/>
+        </collision>
+    </link>
+
+    <link name="left_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.03" radius=".0325"/>
+            </geometry>
+            <origin rpy="0 1.57075 1.57075" />
+            <material name="yellow">
+                <color rgba="1 1 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.03" radius=".0325"/>
+            </geometry>
+            <origin rpy="0 1.57075 1.57075" />
+        </collision>
+    </link>
+
+    <joint name="left_motor" type="continuous">
+        <parent link="base_link"/>
+        <child link="left_wheel"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="-.015 .07 0.0325"/>
+    </joint>
+
+    <link name="right_wheel">
+        <visual>
+            <geometry>
+                <cylinder length="0.03" radius=".0325"/>
+            </geometry>
+            <origin rpy="0 1.57075 1.57075" />
+            <material name="yellow">
+                <color rgba="1 1 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="0.03" radius=".0325"/>
+            </geometry>
+            <origin rpy="0 1.57075 1.57075" />
+        </collision>
+    </link>
+
+    <joint name="right_motor" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+        <axis xyz="0 1 0"/>
+        <origin xyz="-.015 -.07 0.0325"/>
+    </joint>
+
+<!--
+    <link name="camera">
+        <visual>
+            <geometry>
+                <box size=".04 .02 .02"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0 0 1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size=".04 .02 .02"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="camera" type="fixed">
+        <parent link="base_link"/>
+        <child link="camera"/>
+        <origin xyz="0.085 0 0.07" rpy="-1.5708 0 -1.5708"/>
+    </joint>
+-->
+</robot>
