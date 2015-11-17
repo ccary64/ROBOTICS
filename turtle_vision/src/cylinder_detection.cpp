@@ -1,69 +1,68 @@
-
-#include "cylinder_detection.h"
-
-#include <cstdio>
-
-#include <std_srvs/Empty.h>
+#include <ros/ros.h>
+#include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
-
+#include <sensor_msgs/image_encodings.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-namespace cylinder_detection
+using namespace cv;
+using namespace std;
+namespace enc = sensor_msgs::image_encodings;
+
+ros::Subscriber camera_info_subscriber_;
+
+cv_bridge::CvImageConstPtr cv_ptr;
+image_transport::Publisher pub;
+
+double fx_;
+double cx_;
+double object_width_;
+bool camera_info_received_;
+
+
+int LowerH = 0;
+int LowerS = 10;
+int LowerV = 50;
+int UpperH = 10;
+int UpperS = 255;
+int UpperV = 255;
+
+void cameraInfoReceived( const sensor_msgs::CameraInfo &camera_info_msg )
 {
-
-  CylinderDetection::CylinderDetection() : action_client_("move_base",false)
-  {
-    ros::param::param<double>("object_width",object_width_,0.022);
-
-    cv::namedWindow("image");
-    cv::namedWindow("mask");
-    cv::namedWindow("contours");
-    camera_info_received_ = false;
-    camera_info_subscriber_ = node_handle_.subscribe( "/camera/camera_info", 1000, &CylinderDetection::cameraInfoReceived, this );
-    image_subscriber_ = node_handle_.subscribe( "/camera/image_raw", 1000, &CylinderDetection::imageReceived, this );
-  }
-
-  CylinderDetection::~CylinderDetection()
-  {
-  }
-
-  void CylinderDetection::cameraInfoReceived( const sensor_msgs::CameraInfo &camera_info_msg )
-  {
     camera_info_received_ = true;
     fx_ = camera_info_msg.K[0];
     cx_ = camera_info_msg.K[2];
     ROS_INFO_STREAM("Camera focal length: " << fx_ );
     camera_info_subscriber_.shutdown();
   }
-  
-  void CylinderDetection::imageReceived( const sensor_msgs::Image &image_msg )
-  {
-    // makes GUI work
-    cv::waitKey(30);
 
-    // copy image to opencv format
-    cv_bridge::CvImagePtr cv_image_ptr = cv_bridge::toCvCopy( image_msg );
+
+
+void getImage(const sensor_msgs::Image::ConstPtr& original_image)
+{
     
-    // flip image
-    cv::Mat image = cv_image_ptr->image;
-    cv::Mat flipped( image.size(), CV_8UC3 );
-    cv::flip( image, flipped, -1 );
+    try
+    {
+        cv_ptr = cv_bridge::toCvCopy(original_image, enc::BGR8);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+        ROS_ERROR("tutorialROSOpenCV::main.cpp::cv_bridge exception: %s", e.what());
+        return;
+    }
+    
 
-    cv::imshow("image",flipped);
+    cv::Mat img_mask,img_hsv;
+    cv::cvtColor(cv_ptr->image, img_hsv, cv::COLOR_BGR2HSV); 
+    cv::inRange(img_hsv,cv::Scalar(LowerH,LowerS,LowerV),cv::Scalar(UpperH,UpperS,UpperV),img_mask); 
+//    cv::imshow("redmask", img_mask);
+//    cv::waitKey(3);
 
-    // find red pixels
-    cv::Mat redmask( image.size(), CV_8UC1 );
-    cv::inRange(flipped,cv::Scalar(0,0,128),cv::Scalar(64,64,255),redmask);
-
-    cv::imshow("mask",redmask);
-
-    // find blobs
-    cv::Mat contourim( image.size(), CV_8UC1 );
+    cv::Mat contourim( cv_ptr->image.size(), CV_8UC1 );
     contourim = cv::Scalar(0);
     
     std::vector< std::vector< cv::Point2i > > contours;
-    cv::findContours(redmask,contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
+    cv::findContours(img_mask,contours,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);
     
     cv::drawContours(contourim,contours,-1,cv::Scalar(128),-1);
 
@@ -79,9 +78,10 @@ namespace cylinder_detection
         largestContourIndex = i;
       }
     }
-
     cv::drawContours(contourim,contours,largestContourIndex,cv::Scalar(255),-1);
-    cv::imshow("contours",contourim);
+    
+//    cv::imshow("contours",contourim);
+//    cv::waitKey(3);
 
     if ( largestArea < 25. ) return;
     
@@ -111,68 +111,27 @@ namespace cylinder_detection
     // xmax - xmin = ( fx / Z ) * ( Xmax - Xmin )
     // contourwidth = ( fx / Z ) * objectwidth
     // Z = fx * objectwidth / contourwidth
-    float distance = fx_ * object_width_ / contourwidth;
+
+  //  float distance = fx_ * object_width_ / contourwidth;
+ float distance = 200 / contourwidth;
     ROS_INFO_STREAM("distance to cylinder: " << distance );
 
-    // create rotation action
-    move_base_msgs::MoveBaseGoal goal;
-    goal.target_pose.header.frame_id = "base_link";
-    goal.target_pose.header.stamp = ros::Time::now();
-
-    goal.target_pose.pose.position.x = 0;
-    tf::Quaternion goal_orientation;
-    goal_orientation.setEuler(0,0,angle);
-    goal.target_pose.pose.orientation = goal_orientation;
-
-    action_client_.sendGoal(goal);
-
-    action_client_.waitForResult();
-
-    if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-    {
-      ROS_INFO("Action succeeded.");
-    }
-    else
-    {
-      ROS_ERROR("Action failed.");
-    }
-  }
-
 }
-
 int main( int argc, char **argv )
 {
   ros::init(argc, argv, "cylinder_detection");
-
-  // Allow the action server to receive and send ros messages
-  ros::AsyncSpinner spinner(4);
-  spinner.start();
-
   ros::NodeHandle nh;
+  cv::namedWindow("redmask");
+  cv::namedWindow("contours");
+  camera_info_received_ = false;
+  camera_info_subscriber_ = nh.subscribe( "/camera/camera_info", 1, cameraInfoReceived );
 
-  cylinder_detection::CylinderDetection cd;
-
-  // Block until the camera capture service is ready
-  ROS_INFO("Waiting for camera capture service");
-  bool ready = ros::service::waitForService( "/camera/start_capture", -1 );
-  if ( ready )
-  {
-    std_srvs::Empty::Request req;
-    std_srvs::Empty::Response res;
-    bool started = ros::service::call<std_srvs::Empty::Request,std_srvs::Empty::Response>( "/camera/start_capture", req, res );
-
-    if ( !started )
-    {
-      ROS_ERROR("Could not start camera capture.");
-    } else {
-      ROS_INFO("Camera capture started.");
-    }
-  }
-
+  image_transport::ImageTransport it(nh);
+ 
+  
+  pub  = it.advertise("/camera/seeing_red", 1);
+  image_transport::Subscriber sub = it.subscribe("/camera/image_raw", 1, getImage);
   ros::spin();
-
-  ROS_INFO("Shutting down.");
-
   return 0;
 }
 
